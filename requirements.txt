@@ -1,0 +1,6 @@
+yt-dlp
+requests
+beautifulsoup4
+Flask
+python-dotenv
+APScheduler
