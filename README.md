@@ -1,39 +1,80 @@
-# Universal Media discovered Bot (Open Source)
+# Universal Media Orchestrator (UMO-Core)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Framework-Flask-lightgrey?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![SQLite](https://img.shields.io/badge/Database-SQLite-003B57?logo=sqlite&logoColor=white)](https://www.sqlite.org/)
+[![qBittorrent](https://img.shields.io/badge/Client-qBittorrent-lightgrey?logo=qbittorrent&logoColor=white)](https://www.qbittorrent.org/)
+[![TMDB](https://img.shields.io/badge/Data%20Source-TMDB-01d277?logo=themoviedb&logoColor=white)](https://www.themoviedb.org/)
+[![Red Team](https://img.shields.io/badge/Audited%20by-Red%20Team-red?logo=target&logoColor=white)](#)
 
-A powerful, autonomous media discovery and download manager. It discovers trending movies, finds high-quality torrents, and manages downloads through qBittorrent, all with a beautiful web dashboard.
+## Technical Overview
+UMO-Core is a high-performance media discovery and ingestion pipeline designed for autonomous operation. It leverages heuristic search algorithms and asynchronous task orchestration to manage large-scale media libraries.
 
-## 🌟 Key Features
-- **Universal Discovery**: Automatically finds trending movies using TMDB API.
-- **Smart Torrent Integration**: Connects directly to qBittorrent Web UI.
-- **Interactive Dashboard**: Manage your library, edit metadata, and monitor progress in real-time.
-- **Auto-Pilot**: Scrapes and downloads new content every 6 hours automatically.
-- **Telegram Notifications**: Get instant updates on your mobile.
+---
 
-## 🚀 Quick Setup
+## System Architecture
 
-1. **Prerequisites**:
-   - Python 3.10+
-   - qBittorrent installed
-   - TMDB API Key (Free)
+| Component | Engineering Description | Technology Stack |
+| :--- | :--- | :--- |
+| **Discovery Engine** | Heuristic trend analysis via TMDB API endpoints. | Python / Requests / JSON |
+| **Ingestion Pipeline** | Multi-threaded task queuing for concurrent media processing. | Concurrent.Futures / yt-dlp |
+| **Persistence Layer** | Relational data mapping for persistent state tracking. | SQLite3 / Thread-Safe Locks |
+| **Remote Orchestrator** | API-driven command & control via qBittorrent Web UI. | qbittorrent-api v2.0+ |
+| **Control Interface** | Glassmorphic management dashboard for real-time telemetry. | HTML5 / CSS3 / Flask-Jinja2 |
 
-2. **Installation**:
-   ```bash
-   git clone https://github.com/youruser/universal-media-bot.git
-   cd universal-media-bot
-   pip install -r requirements.txt
-   ```
+---
 
-3. **Configuration**:
-   - Rename `.env.example` to `.env` and fill in your keys.
-   - Enable **Web UI** in qBittorrent (Tools -> Options -> Web UI).
+## Core Capabilities
 
-4. **Launch**:
-   - Double-click `¡CLIC_AQUI_PARA_INICIAR!.bat` on Windows or run `python main.py`.
+<details>
+<summary><b>[+] Autonomous Media Discovery (Discovery V2)</b></summary>
+The system implements a polling mechanism that queries global trending endpoints. It applies content filters and genre-specific masks to prioritize high-value assets for internal ingestion.
+</details>
 
-## 🛠 Tech Stack
-- **Backend**: Python, Flask, SQLite.
-- **Download Engines**: yt-dlp, qBittorrent API.
-- **Visuals**: Modern CSS (Glassmorphism), Vanilla JS.
+<details>
+<summary><b>[+] Asynchronous Torrent Routing</b></summary>
+Incoming magnet links are validated and dispatched to the qBittorrent RPC interface. The orchestrator monitors the peer-to-peer state and updates the central database via event-driven hooks.
+</details>
 
-## 📄 License
-MIT License - Feel free to use and contribute!
+<details>
+<summary><b>[+] Metadata Enrichment & Normalization</b></summary>
+Automatically scrapes TMDB for poster assets and production metadata to ensure a normalized data structure across the library.
+</details>
+
+---
+
+## Deployment Logic
+
+### Phase 1: Environment Provisioning
+Initialize the virtual environment and install the required dependency tree:
+```bash
+python -m venv venv
+source venv/bin/activate  # atau .\venv\Scripts\activate pada Windows
+pip install -r requirements.txt
+```
+
+### Phase 2: Configuration Injection
+Map the environment variables in the `.env` container:
+```bash
+# Core API Access
+TMDB_API_KEY=your_secured_token
+# Torrent RPC Credentials
+QB_URL=http://127.0.0.1:8080
+QB_USER=admin
+QB_PASS=adminadmin
+```
+
+### Phase 3: Runtime Execution
+Execute the master orchestrator to initiate the command-line interface:
+```bash
+python main.py
+```
+
+---
+
+## Security & Integrity
+The system is architected with a strict `.gitignore` policy to prevent sensitive credential leakage. The persistence layer utilizes thread-locking mechanisms to prevent race conditions during high-concurrency ingestion cycles.
+
+**[!] Disclaimer:** This tool is designed for educational purposes and personal media management. Ensure compliance with local data regulations.
+
+---
+**Build Status:** `STABLE` | **Deployment Model:** `EDGE` | **Architecture:** `MONOLITHIC-ORCHESTRATOR`
