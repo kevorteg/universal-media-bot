@@ -5,6 +5,15 @@
 [![qBittorrent](https://img.shields.io/badge/Client-qBittorrent-lightgrey?logo=qbittorrent&logoColor=white)](https://www.qbittorrent.org/)
 [![TMDB](https://img.shields.io/badge/Data%20Source-TMDB-01d277?logo=themoviedb&logoColor=white)](https://www.themoviedb.org/)
 [![Red Team](https://img.shields.io/badge/Audited%20by-Red%20Team-red?logo=target&logoColor=white)](#)
+## Table of Contents
+- [Technical Overview](#technical-overview)
+- [System Architecture](#system-architecture)
+- [Core Capabilities](#core-capabilities)
+- [Deployment Logic](#deployment-logic)
+- [Security & Integrity](#security--integrity)
+- [Roadmap](#engineering-roadmap)
+
+---
 
 ## Technical Overview
 UMO-Core is a high-performance media discovery and ingestion pipeline designed for autonomous operation. It leverages heuristic search algorithms and asynchronous task orchestration to manage large-scale media libraries.
@@ -88,6 +97,16 @@ python main.py
 The system is architected with a strict `.gitignore` policy to prevent sensitive credential leakage. The persistence layer utilizes thread-locking mechanisms to prevent race conditions during high-concurrency ingestion cycles.
 
 **[!] Disclaimer:** This tool is designed for educational purposes and personal media management. Ensure compliance with local data regulations.
+
+---
+
+## Engineering Roadmap
+The following modules are scheduled for upcoming development cycles:
+- **[ ] AI-Synced Subtitles**: Deep learning models for automatic subtitle synchronization.
+- **[ ] Plex/Jellyfin Integration**: Direct export of metadata to media server formats.
+- **[ ] Multi-Tenant Auth**: Role-based access control (RBAC) for the Web Dashboard.
+- **[ ] P2P Health Monitoring**: Advanced metrics for tracker and peer health.
+- **[ ] Distributed Ingestion**: Multi-node support for high-throughput downloads.
 
 ---
 **Build Status:** `STABLE` | **Deployment Model:** `EDGE` | **Architecture:** `MONOLITHIC-ORCHESTRATOR`
