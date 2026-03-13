@@ -44,7 +44,12 @@ Automatically scrapes TMDB for poster assets and production metadata to ensure a
 
 ## Deployment Logic
 
-### Phase 1: Environment Provisioning
+### Phase 1: Dependency Provisioning
+The system requires the following binary environments:
+- **Python v3.10+**: [python.org/downloads](https://www.python.org/downloads/)
+- **qBittorrent (Web UI enabled)**: [qbittorrent.org/download](https://www.qbittorrent.org/download.php)
+- **FFmpeg Engine**: [ffmpeg.org/download](https://ffmpeg.org/download.html)
+
 Initialize the virtual environment and install the required dependency tree:
 ```bash
 python -m venv venv
@@ -52,8 +57,16 @@ source venv/bin/activate  # atau .\venv\Scripts\activate pada Windows
 pip install -r requirements.txt
 ```
 
-### Phase 2: Configuration Injection
-Map the environment variables in the `.env` container:
+### Phase 2: Credential Acquisition & Injection
+To interface with global media databases, you must provision the following tokens:
+
+#### 1. TMDB API Access (Discovery Layer)
+- **Endpoint**: [themoviedb.org/settings/api](https://www.themoviedb.org/settings/api)
+- **Protocol**: Create a developer account and generate a v3 API Key to populate `TMDB_API_KEY`.
+
+#### 2. qBittorrent RPC (Ingestion Layer)
+- Ensure **Web UI** is active in `Tools -> Options -> Web UI`.
+- Map your local host and credentials to the `.env` container:
 ```bash
 # Core API Access
 TMDB_API_KEY=your_secured_token
