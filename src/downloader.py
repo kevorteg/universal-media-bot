@@ -44,17 +44,24 @@ def descargar_pelicula(media_db):
     actualizar_estado(media_db['id'], "descargando")
     send_telegram_message(f"⏳ <b>Iniciando proceso:</b>\n{titulo_base}")
 
-    # --- LÓGICA DE TORRENT (Fase 6/7) ---
+    # --- LÓGICA DE CAZADOR (HUNTER) ---
     url_final = media_db['url']
+    
+    # Si es una URL de tracker (DonTorrent, etc), la resolvemos a Magnet
+    from src.torrent_searcher import resolver_url_a_magnet, buscar_magnet_en_google
+    resolved_magnet = resolver_url_a_magnet(url_final)
+    if resolved_magnet:
+        url_final = resolved_magnet
+    
+    # Si sigue siendo un comando de búsqueda automática
     if url_final.startswith("torrent:"):
-        print(f"  -> Buscando magnet automáticamente para: {media_db['titulo_original']}")
-        from src.torrent_searcher import buscar_magnet_en_google
+        print(f"  -> [HUNTER] Iniciando cacería automática para: {media_db['titulo_original']}")
         magnet = buscar_magnet_en_google(media_db['titulo_original'])
         if magnet:
             url_final = magnet
         else:
-            print(f"  [!] No se encontró torrent automático para {media_db['titulo_original']}")
-            actualizar_estado(media_db['id'], "error", mensaje_error="Torrent no encontrado")
+            print(f"  [!] La presa escapó. No se encontró torrent automático.")
+            actualizar_estado(media_db['id'], "error", mensaje_error="No encontrado")
             return False
 
     if url_final.startswith("magnet:?") or ".torrent" in url_final.lower():
@@ -62,7 +69,7 @@ def descargar_pelicula(media_db):
         exito = enviar_a_qbittorrent(url_final, nombre_carpeta)
         if exito:
             actualizar_estado(media_db['id'], "completada", mensaje_error="En qBittorrent")
-            send_telegram_message(f"🏴‍☠️ <b>Torrent Agregado:</b>\n{titulo_base}\nMonitoriza el progreso en qBittorrent.")
+            send_telegram_message(f"🏴‍☠️ <b>Tracker/Magnet Capturado:</b>\n{titulo_base}")
             return True
         else:
             actualizar_estado(media_db['id'], "error", mensaje_error="Error qBT")
