@@ -153,16 +153,32 @@ def eliminar_errores():
             conn.commit()
     return eliminados
 
-def actualizar_metadatos(id_medio, titulo, anio):
-    """Fuerza un título local, año, y devuelve el estado a 'pendiente' para reintento."""
+def eliminar_medio(id_medio):
+    """Elimina permanentemente un medio específico de la BD."""
     with db_lock:
         with get_connection() as conn:
             cursor = conn.cursor()
-            cursor.execute("""
-                UPDATE multimedia 
-                SET titulo_limpio = ?, anio = ?, estado = 'pendiente', fecha_descarga = NULL
-                WHERE id = ?
-            """, (titulo, anio, id_medio))
+            cursor.execute("DELETE FROM multimedia WHERE id = ?", (id_medio,))
+            eliminados = cursor.rowcount
+            conn.commit()
+    return eliminados
+
+def actualizar_metadatos(id_medio, titulo, anio, url=None):
+    """Fuerza un título local, año, (opcionalmente URL Mágnet) y devuelve el estado a 'pendiente' para reintento."""
+    with db_lock:
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            query = "UPDATE multimedia SET titulo_limpio = ?, anio = ?, estado = 'pendiente', fecha_descarga = NULL"
+            params = [titulo, anio]
+            
+            if url:
+                query += ", url = ?"
+                params.append(url)
+                
+            query += " WHERE id = ?"
+            params.append(id_medio)
+            
+            cursor.execute(query, params)
             conn.commit()
 
 # Inicializar DB siempre al importar

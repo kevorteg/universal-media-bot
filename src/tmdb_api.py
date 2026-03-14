@@ -13,12 +13,12 @@ def buscar_en_tmdb(titulo):
     # Limpiar título para buscar mejor
     query = titulo.replace("_", " ").split('-')[0].strip()
     
-    # Endpoint de búsqueda
-    url = f"https://api.themoviedb.org/3/search/movie"
+    # Endpoint de búsqueda (multi para soportar pelis y series)
+    url = f"https://api.themoviedb.org/3/search/multi"
     params = {
         "api_key": TMDB_API_KEY,
         "query": query,
-        "language": "es-ES", # Buscar en español
+        "language": "es-MX", # Latino por defecto (o es-ES)
     }
 
     try:
@@ -26,25 +26,31 @@ def buscar_en_tmdb(titulo):
         res.raise_for_status()
         data = res.json()
         
-        if data.get("results") and len(data["results"]) > 0:
+        # Filtramos para quedarnos solo con de tipo movie o tv
+        results = [r for r in data.get("results", []) if r.get("media_type") in ("movie", "tv")]
+        
+        if len(results) > 0:
             # Tomamos el primer resultado
-            peli = data["results"][0]
+            item = results[0]
             
-            titulo_oficial = peli.get("title") or peli.get("original_title")
-            # Extraer solo el año de release_date "2014-03-21"
+            titulo_oficial = item.get("title") or item.get("name") or item.get("original_title") or item.get("original_name")
+            
+            # Extraer solo el año
+            fecha = item.get("release_date") or item.get("first_air_date")
             anio = None
-            if peli.get("release_date"):
-                anio = int(peli["release_date"].split("-")[0])
+            if fecha:
+                anio = int(fecha.split("-")[0])
                 
             poster_url = None
-            if peli.get("poster_path"):
-                poster_url = f"https://image.tmdb.org/t/p/w500{peli['poster_path']}"
+            if item.get("poster_path"):
+                poster_url = f"https://image.tmdb.org/t/p/w500{item['poster_path']}"
                 
             return {
                 "titulo_limpio": titulo_oficial,
                 "anio": anio,
-                "tmdb_id": peli.get("id"),
-                "poster_url": poster_url
+                "tmdb_id": item.get("id"),
+                "poster_url": poster_url,
+                "media_type": item.get("media_type")
             }
         else:
             return None
