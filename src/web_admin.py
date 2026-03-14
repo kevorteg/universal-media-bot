@@ -96,6 +96,7 @@ HTML_TEMPLATE = """
         <h1><i class="fa-solid fa-play-circle" style="color:var(--primary)"></i> Universal Media Dashboard</h1>
         <div class="controls">
             <button class="btn btn-purge" onclick="purgarErrores()"><i class="fa-solid fa-trash"></i> Limpiar Errores</button>
+            <button class="btn btn-purge" onclick="borrarTodoBD()"><i class="fa-solid fa-skull"></i> Borrar BD</button>
             <button class="btn btn-start" onclick="iniciarDescargas()"><i class="fa-solid fa-rocket"></i> Iniciar Descargas</button>
         </div>
     </div>
@@ -240,6 +241,16 @@ HTML_TEMPLATE = """
         .then(r => r.json()).then(d => { alert(d.mensaje); location.reload(); });
     }
 
+    function borrarTodoBD() {
+        if(!confirm("⚠️ ¡ADVERTENCIA CRÍTICA! ⚠️\n\n¿Estás seguro de que deseas BORRAR TODA LA BASE DE DATOS?\nEsto eliminará del bot tanto las películas pendientes como el registro de las completadas.\n\nEsta acción NO se puede deshacer.")) return;
+        
+        fetch('/api/borrar_todo', { method: 'POST' })
+        .then(r => r.json()).then(d => { 
+            alert(d.mensaje); 
+            location.reload(); 
+        });
+    }
+
     function purgarErrores() {
         if(!confirm("¿Seguro que quieres borrar todas las películas con error?\nEsto no se puede deshacer.")) return;
         fetch('/api/purgar_errores', { method: 'POST' })
@@ -340,6 +351,12 @@ def iniciar_descargas_api():
 def api_purgar():
     cantidad = eliminar_errores()
     return jsonify({"mensaje": f"Se eliminaron {cantidad} registros con error."})
+
+@app.route("/api/borrar_todo", methods=["POST"])
+def api_borrar_todo():
+    from src.database import borrar_todo
+    cantidad = borrar_todo()
+    return jsonify({"mensaje": f"Se borró TODA la base de datos ({cantidad} registros eliminados)."})
 
 @app.route("/api/editar_metadatos/<int:id_medio>", methods=["POST"])
 def api_editar(id_medio):

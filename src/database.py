@@ -163,6 +163,16 @@ def eliminar_medio(id_medio):
             conn.commit()
     return eliminados
 
+def borrar_todo():
+    """Elimina permanentemente toda la multimedia de la BD."""
+    with db_lock:
+        with get_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM multimedia")
+            eliminados = cursor.rowcount
+            conn.commit()
+    return eliminados
+
 def actualizar_metadatos(id_medio, titulo, anio, url=None):
     """Fuerza un título local, año, (opcionalmente URL Mágnet) y devuelve el estado a 'pendiente' para reintento."""
     with db_lock:
