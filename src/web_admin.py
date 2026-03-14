@@ -97,7 +97,7 @@ HTML_TEMPLATE = """
         <div class="controls">
             <button class="btn btn-purge" onclick="purgarErrores()"><i class="fa-solid fa-trash"></i> Limpiar Errores</button>
             <button class="btn btn-purge" onclick="borrarTodoBD()"><i class="fa-solid fa-skull"></i> Borrar BD</button>
-            <button class="btn btn-start" onclick="iniciarDescargas()"><i class="fa-solid fa-rocket"></i> Iniciar Descargas</button>
+            <button class="btn btn-start" onclick="iniciarDescargas(this)"><i class="fa-solid fa-rocket"></i> Iniciar Descargas</button>
         </div>
     </div>
     
@@ -142,9 +142,9 @@ HTML_TEMPLATE = """
 
             <div class="card-buttons">
                 {% if status_class == 'completada' %}
-                    <button class="btn btn-play" onclick="verVideo({{ p.id }}, '{{ (p.titulo_limpio or p.titulo_original)|replace("'", "\\'") }}')"><i class="fa-solid fa-play"></i> Previa</button>
+                    <button class="btn btn-play" onclick='verVideo({{ p.id }}, {{ (p.titulo_limpio or p.titulo_original) | tojson }})'><i class="fa-solid fa-play"></i> Previa</button>
                 {% else %}
-                    <button class="btn btn-edit" style="flex:1" onclick="abrirEditor({{ p.id }}, '{{ (p.titulo_limpio or p.titulo_original)|replace("'", "\\'") }}', '{{ p.anio or "" }}', '{{ p.url|replace("'", "\\'") if p.url else "" }}')"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn btn-edit" style="flex:1" onclick='abrirEditor({{ p.id }}, {{ (p.titulo_limpio or p.titulo_original) | tojson }}, {{ (p.anio or "") | tojson }}, {{ (p.url or "") | tojson }})'><i class="fa-solid fa-pen"></i></button>
                 {% endif %}
                 <button class="btn btn-del" onclick="borrarMedio({{ p.id }})"><i class="fa-solid fa-trash"></i></button>
             </div>
@@ -153,9 +153,9 @@ HTML_TEMPLATE = """
         <!-- Para vista List -->
         <div class="card-actions">
             {% if status_class == 'completada' %}
-                <button class="btn btn-play" onclick="verVideo({{ p.id }}, '{{ (p.titulo_limpio or p.titulo_original)|replace("'", "\\'") }}')"><i class="fa-solid fa-play"></i> Ver Previa</button>
+                <button class="btn btn-play" onclick='verVideo({{ p.id }}, {{ (p.titulo_limpio or p.titulo_original) | tojson }})'><i class="fa-solid fa-play"></i> Ver Previa</button>
             {% else %}
-                <button class="btn btn-edit" onclick="abrirEditor({{ p.id }}, '{{ (p.titulo_limpio or p.titulo_original)|replace("'", "\\'") }}', '{{ p.anio or "" }}', '{{ p.url|replace("'", "\\'") if p.url else "" }}')"><i class="fa-solid fa-pen"></i> Editar Info</button>
+                <button class="btn btn-edit" onclick='abrirEditor({{ p.id }}, {{ (p.titulo_limpio or p.titulo_original) | tojson }}, {{ (p.anio or "") | tojson }}, {{ (p.url or "") | tojson }})'><i class="fa-solid fa-pen"></i> Editar Info</button>
             {% endif %}
             <button class="btn btn-del" onclick="borrarMedio({{ p.id }})"><i class="fa-solid fa-trash"></i> Borrar Entrada</button>
         </div>
@@ -234,15 +234,15 @@ HTML_TEMPLATE = """
     }
 
     // API Funciones
-    function iniciarDescargas() {
+    function iniciarDescargas(btn) {
         // Lógica de feedback visual
-        event.target.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Iniciando...';
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Iniciando...';
         fetch('/api/iniciar_descargas', { method: 'POST' })
         .then(r => r.json()).then(d => { alert(d.mensaje); location.reload(); });
     }
 
     function borrarTodoBD() {
-        if(!confirm("⚠️ ¡ADVERTENCIA CRÍTICA! ⚠️\n\n¿Estás seguro de que deseas BORRAR TODA LA BASE DE DATOS?\nEsto eliminará del bot tanto las películas pendientes como el registro de las completadas.\n\nEsta acción NO se puede deshacer.")) return;
+        if(!confirm(`⚠️ ¡ADVERTENCIA CRÍTICA! ⚠️\n\n¿Estás seguro de que deseas BORRAR TODA LA BASE DE DATOS?\nEsto eliminará del bot tanto las películas pendientes como el registro de las completadas.\n\nEsta acción NO se puede deshacer.`)) return;
         
         fetch('/api/borrar_todo', { method: 'POST' })
         .then(r => r.json()).then(d => { 
@@ -252,7 +252,7 @@ HTML_TEMPLATE = """
     }
 
     function purgarErrores() {
-        if(!confirm("¿Seguro que quieres borrar todas las películas con error?\nEsto no se puede deshacer.")) return;
+        if(!confirm(`¿Seguro que quieres borrar todas las películas con error?\nEsto no se puede deshacer.`)) return;
         fetch('/api/purgar_errores', { method: 'POST' })
         .then(r => r.json()).then(d => { location.reload(); });
     }
